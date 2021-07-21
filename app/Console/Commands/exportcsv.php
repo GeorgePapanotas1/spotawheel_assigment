@@ -56,7 +56,7 @@ class exportcsv extends Command
          */
 
         Client::whereHas('payments', function ($query) {
-            return $query->where('created_at', '>', Carbon::now()->subDays(1500));
+            return $query->where('created_at', '>', Carbon::now()->subDays(30));
         })->with(['payments' => function ($q){
             $q->orderBy('created_at', 'DESC');
         }])

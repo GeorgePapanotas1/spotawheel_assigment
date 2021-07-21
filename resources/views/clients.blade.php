@@ -30,7 +30,7 @@
                         <p class="text-center">Select custom range</p>
                     </div>
                     <div class="input-group flex justify-center">
-                        <input type="text" name="datetimes" />
+                        <input type="text" id="daterange" name="datetimes" />
                     </div>
                 </div>
                 <table class="table">
@@ -43,7 +43,7 @@
                         <th scope="col">Lastest Payment Amount</th>
                       </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="tbody-item">
                         @forelse($clients as $client)
 
                         <tr>
@@ -56,7 +56,7 @@
                             @else
                             <td colspan="2">No payment recorded</td>
                             @endif
-                          </tr>
+                        </tr>
                         @empty
                         <tr>
                             <td>No clients available</td>
@@ -73,12 +73,53 @@
         <script>
             $(function() {
                 $('input[name="datetimes"]').daterangepicker({
-                    startDate: moment().startOf('hour'),
-                    endDate: moment().startOf('hour').add(32, 'hour'),
+                    startDate: moment('2020-01-01').startOf('hour'),
+                    endDate: moment('2020-01-01').startOf('hour').add(32, 'hour'),
                     locale: {
                     format: 'DD/MM/YYYY'
                     }
                 });
+
+                const baseURL = 'http://127.0.0.1:8000';
+
+                let fetchFiltered = async (startDate, endDate) => {
+                    const raw = await fetch(`${baseURL}/api/filtered`, {
+                        method: 'POST',
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Accept": "application/json",
+                        },
+                        body: JSON.stringify({
+                            "startDate": startDate,
+                            "endDate": endDate
+                        })
+                    });
+                    const response = await raw.json();
+                    return response;
+                }
+
+                $('#daterange').on('apply.daterangepicker', async function(ev, picker) {
+                    startDate = picker.startDate.format('YYYY-MM-DD');
+                    endDate = picker.endDate.format('YYYY-MM-DD');
+                    let data = await fetchFiltered(startDate, endDate);
+                    data = data.clients;
+                    $('#tbody-item').html('');
+                    let innerHTML = '';
+                    for (let i = 0; i < data.length; i++){
+                        innerHTML += '<tr>';
+                        innerHTML += '<th scope="row">' + data[i].id + '</th>';
+                        innerHTML += '<td>' + data[i].name+ '</td>';
+                        innerHTML += '<td>' + data[i].surname + '</td>';
+                        innerHTML += '<td>' + data[i].latest_payment['created_at'] + '</td>';
+                        innerHTML += '<td>' + data[i].latest_payment['amount'] +'</td>';
+                        innerHTML += '</tr>';
+                        console.log(data[i].id);
+                    }
+
+                    $('#tbody-item').html(innerHTML);
+
+                });
+
             });
         </script>
     </body>

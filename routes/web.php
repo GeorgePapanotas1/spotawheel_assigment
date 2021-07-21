@@ -14,10 +14,5 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [ClientController::class, 'getClients']);
 
-Route::get('/data', [ClientController::class, 'getClients']);
-
-Route::get('/tests', 'App\Http\Controllers\ClientController@test');
