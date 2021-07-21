@@ -110,7 +110,7 @@
                         innerHTML += '<th scope="row">' + data[i].id + '</th>';
                         innerHTML += '<td>' + data[i].name+ '</td>';
                         innerHTML += '<td>' + data[i].surname + '</td>';
-                        innerHTML += '<td>' + data[i].latest_payment['created_at'] + '</td>';
+                        innerHTML += '<td>' + moment(data[i].latest_payment['created_at']).format('YYYY-MM-DD') + '</td>';
                         innerHTML += '<td>' + data[i].latest_payment['amount'] +'</td>';
                         innerHTML += '</tr>';
                         console.log(data[i].id);
